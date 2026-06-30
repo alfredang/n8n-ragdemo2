@@ -12,6 +12,10 @@ RAG chatbot**, plus the n8n automation to ingest 20 course brochures into a vect
 database. Visitors can ask the chatbot about any course — **duration, fee, location,
 schedule** — and get answers grounded in the brochures.
 
+## Live Demo
+
+🔗 **https://alfredang.github.io/n8n-ragdemo2/**
+
 ![Cook & Bake Academy — home screen](screenshot.png)
 
 ## What's inside
