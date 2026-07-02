@@ -5,6 +5,7 @@
 ![Pinecone](https://img.shields.io/badge/Pinecone-vector_db-111?logo=pinecone&logoColor=white)
 ![Qdrant](https://img.shields.io/badge/Qdrant-vector_db-DC244C?logo=qdrant&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-embeddings-412991?logo=openai&logoColor=white)
+![Gemini](https://img.shields.io/badge/Google_Gemini-embeddings_%2B_chat-4285F4?logo=google&logoColor=white)
 ![HTML/CSS/JS](https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-E34F26?logo=html5&logoColor=white)
 
 A one-page landing page for a cooking & bakery training center with a **customer-service
@@ -25,7 +26,7 @@ schedule** — and get answers grounded in the brochures.
 | [`website/`](website/) | One-page landing site (HTML/CSS/JS) with a floating RAG chatbot widget. Images from Unsplash. |
 | [`brochures/`](brochures/) | 20 mock course brochures (`.txt`) — 10 bakery + 10 cooking — to upload to Google Drive. |
 | [`n8n-workflows/`](n8n-workflows/) | 3 **manual-trigger** ingestion workflows (Supabase, Pinecone, Qdrant). |
-| `CX Agent with RAG_superbase.json` | The answering RAG agent workflow (chat → retrieve → respond). |
+| [`CX Agent with RAG.json`](CX%20Agent%20with%20RAG.json) | The answering RAG agent workflow: **Webhook (POST) → AI Agent (Gemini Flash + Pinecone retrieval tool) → Respond to Webhook**. |
 | [`LEARNER-GUIDE.md`](LEARNER-GUIDE.md) | Step-by-step setup for Supabase, Pinecone & Qdrant vector databases. |
 
 ## Quick start
@@ -43,14 +44,26 @@ schedule** — and get answers grounded in the brochures.
 
 ## The 3 ingestion workflows (Manual Trigger)
 
-Each does: **Manual Trigger → List Drive folder → Download each brochure → Split → Embed (OpenAI) → Upsert** into:
+Each does: **Manual Trigger → List Drive folder → Download each brochure → Split → Embed → Upsert** into:
 
-- [`1_Upload_Brochures_to_Supabase_Manual.json`](n8n-workflows/1_Upload_Brochures_to_Supabase_Manual.json) — Supabase pgvector
-- [`2_Upload_Brochures_to_Pinecone_Manual.json`](n8n-workflows/2_Upload_Brochures_to_Pinecone_Manual.json) — Pinecone
-- [`3_Upload_Brochures_to_Qdrant_Manual.json`](n8n-workflows/3_Upload_Brochures_to_Qdrant_Manual.json) — Qdrant
+- [`1_Upload_Brochures_to_Supabase_Manual.json`](n8n-workflows/1_Upload_Brochures_to_Supabase_Manual.json) — Supabase pgvector (OpenAI embeddings, 1536 dims)
+- [`2_Upload_Brochures_to_Pinecone_Manual.json`](n8n-workflows/2_Upload_Brochures_to_Pinecone_Manual.json) — Pinecone (Google Gemini `gemini-embedding-001`, **3072 dims**; embeds each brochure as **one whole-document vector** → 20 records)
+- [`3_Upload_Brochures_to_Qdrant_Manual.json`](n8n-workflows/3_Upload_Brochures_to_Qdrant_Manual.json) — Qdrant (OpenAI embeddings, 1536 dims)
 
-> Embeddings use OpenAI (1536 dimensions). Your vector table/index/collection must
-> match that dimension — see the learner guide.
+> Your vector table/index/collection dimension must match the embedding model —
+> see the learner guide. The insert and retrieval nodes must also use the same
+> index **and namespace** (both are left on the default namespace here).
+
+## RAG accuracy & speed tuning (baked into the workflows)
+
+- **Whole-brochure chunks** — each ~2.7 KB brochure is one vector (chunk size 4000),
+  so retrieval returns complete brochures instead of fragments.
+- **Matching namespaces** — insert & retrieve both use Pinecone's default namespace;
+  a mismatch makes retrieval silently return nothing.
+- **Top K = 5** with a descriptive tool description, so comparison questions work.
+- **`gemini-2.5-flash`** chat model for fast responses.
+- The webhook trigger passes `{{ $json.body.chatInput }}` to the agent (a Webhook
+  wraps the POST payload in `body`, unlike a Chat Trigger).
 
 ## Regenerate the brochures
 
