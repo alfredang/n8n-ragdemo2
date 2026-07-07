@@ -71,25 +71,27 @@
       "name": "Pinecone Vector Store",
       "credentials": {
         "pineconeApi": {
-          "id": "4P7nN4UFvrslSzmo",
-          "name": "Pinecone account 2"
+          "id": "bnKYwCKa8YmEtOQn",
+          "name": "Pinecone account"
         }
       }
     },
     {
-      "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
-      "typeVersion": 1,
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
       "position": [
         48,
         944
       ],
       "id": "a5e353ff-3ad7-4d60-a1a7-d014e638baf8",
-      "name": "Embeddings Google Gemini",
+      "name": "Embeddings OpenAI",
       "credentials": {
-        "googlePalmApi": {
-          "id": "k7EdQ13D9mQ8Na3k",
-          "name": "Google API Key"
+        "openAiApi": {
+          "id": "Hu8cP5b0Yhomo7VM",
+          "name": "OpenAi API Key (Alfred Account)"
         }
       }
     },
@@ -108,13 +110,12 @@
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "k7EdQ13D9mQ8Na3k",
-          "name": "Google API Key"
+          "id": "EKoniIk8TbTx3Td4",
+          "name": "Gemini API Key (n8n TMS)"
         }
       }
     }
   ],
-  "pinData": {},
   "connections": {
     "AI Agent": {
       "main": [
@@ -149,17 +150,6 @@
         ]
       ]
     },
-    "Embeddings Google Gemini": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Pinecone Vector Store",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Google Gemini Chat Model": {
       "ai_languageModel": [
         [
@@ -170,20 +160,27 @@
           }
         ]
       ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "dea1a754-d53d-4cee-8617-084cca997a91",
+  "active": true,
+  "id": "S7ZRE76VNdfIyYoV",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "de2fb037a4a212697beb8609c4fbff73d8e93b29e73aa61c51b0e275cb083f13"
-  },
-  "nodeGroups": [],
-  "id": "PPTw3Y6g4XZ7BMFN",
-  "tags": []
+    "templateCredsSetupCompleted": true
+  }
 }
